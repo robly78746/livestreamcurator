@@ -1,0 +1,11 @@
+.livestream {
+    width: 400px;
+    height: 300px;
+    float: left;
+    display: inline-block;
+    margin: 10px;
+    text-align: center;
+}
+.links {
+    text-align: center;
+}
