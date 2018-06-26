@@ -1,13 +1,14 @@
 {% extends 'livestreamcurator/base.html' %}
 
-{% block title %}Home{% endblock %}
+{% block title %}Livestream Curator{% endblock %}
 
 {% block content %}
+<a href="{% url 'livestream:home' %}">Livestream Curator</a>
 {% if user.is_authenticated %}
 Welcome, <a href="{% url 'livestream:profile' user.username %}">{{ user.username }}</a>
 <a href="{% url 'logout' %}">Log Out</a>
 {% else %}
-<p>You are not logged in.</p>
+<a href="{% url 'signup' %}">Sign up</a>
 <a href="{% url 'login' %}">Log In</a>
 {% endif %}
 {% endblock %}

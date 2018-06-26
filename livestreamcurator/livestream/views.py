@@ -5,16 +5,17 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 from django.urls import reverse
+from django.conf import settings
 from .models import Livestream
 from .forms import LivestreamForm
+
 
 # Create your views here.
 def profile(request, username):
     user = request.user
     ownPage = user.is_authenticated and user.username == username
-    if not User.objects.filter(username=username).exists():
-        raise Http404('User does not exist')
-    context = {'ownPage': ownPage}
+    pageUser = get_object_or_404(User, username=username)
+    context = {'ownPage': ownPage, 'pageUser': pageUser}
     return render(request, 'livestream/profile.html', context)
     
 @login_required
@@ -45,3 +46,6 @@ def deleteStream(request, username):
         livestream = get_object_or_404(Livestream, pk=request.POST['id'])
         livestream.delete()
     return HttpResponseRedirect(reverse('livestream:profile', args=(request.user.username,)))
+    
+
+        

@@ -4,11 +4,11 @@
 <link rel="stylesheet" type="text/css" href="{% static 'livestream/styles.css' %}" />
 {% endblock head %}
 
-{% block title %}{{ user.username }}{% endblock title %}
+{% block title %}{{ pageUser.username }}{% endblock title %}
 
 {% block content %}
-<h2>{{ user.username }}<h2>
-{% for livestream in user.livestream_set.all %}
+<a href="{% url 'livestream:home' %}">Livestream Curator</a><h2>{{ pageUser.get_username }}<h2>
+{% for livestream in pageUser.livestream_set.all %}
 <div class="livestream">
     <iframe
         src="http://player.twitch.tv/?channel={{ livestream.twitchUsername }}&muted=true"
@@ -18,18 +18,21 @@
         scrolling="no"
         allowfullscreen="true">
     </iframe>
+    
     <div class="links">
-        <form action="{% url 'livestream:delete' user.username %}" method="post">
+        {% if ownPage is True %}
+        <form action="{% url 'livestream:delete' pageUser.get_username %}" method="post">
             {% csrf_token %}
             <input type="hidden" name="id" value="{{ livestream.id }}">
             <button type="submit">Delete</button>
         </form>
+        {% endif %}
     </div>
 </div>
 {% endfor %}
 {% if ownPage is True %}
 <div class='livestream'>
-<a href="{% url 'livestream:add' user.username %}">Add</a>
+<a href="{% url 'livestream:add' pageUser.get_username %}">Add</a>
 </div>
 {% endif %}
 {% endblock content %}

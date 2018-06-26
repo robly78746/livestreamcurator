@@ -5,7 +5,10 @@ from django.contrib.auth.models import User
 
 class Livestream(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    twitchUsername = models.CharField(unique=True, max_length=200)
+    twitchUsername = models.CharField(max_length=200)
     
     def __str__(self):
         return self.twitchUsername
+        
+    class Meta:
+        unique_together = ['user', 'twitchUsername']
