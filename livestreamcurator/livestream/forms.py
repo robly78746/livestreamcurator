@@ -1,9 +1,7 @@
 from django import forms
 from .models import Livestream
 from django.contrib.auth.models import User
-import requests
-import json
-from django.conf import settings
+from .twitchAPI import twitchUsernameValid
 
 class LivestreamForm(forms.ModelForm):
     class Meta:
@@ -28,22 +26,8 @@ class LivestreamForm(forms.ModelForm):
     # verifies twitch username is valid
     def clean_twitchUsername(self):
         cleaned_twitchUsername = self.cleaned_data['twitchUsername']
-        if not validTwitchUsername(cleaned_twitchUsername):
+        if not twitchUsernameValid(cleaned_twitchUsername):
             raise forms.ValidationError('Twitch username not found.')
         return cleaned_twitchUsername
         
         
-def validTwitchUsername(username):
-    return username in validTwitchUsernames([username])
-    
-def validTwitchUsernames(usernames):
-    url = 'https://api.twitch.tv/helix/users?'
-    userLogins = ['login=' + username for username in usernames]
-    params = '&'.join(userLogins)
-    url += params
-    headers = {'Client-ID': settings.TWITCH_CLIENT_ID}
-    response = requests.get(url, headers=headers)
-    json_data = json.loads(response.text)
-    data = json_data['data']
-    validUsernames = [userInfo['login'] for userInfo in data]
-    return validUsernames
