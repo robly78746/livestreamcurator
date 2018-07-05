@@ -1,0 +1,23 @@
+{% extends 'livestreamcurator/base.html' %}
+
+{% load static %}
+{% block head %}
+<link rel="stylesheet" type="text/css" href="{% static 'livestream/styles.css' %}" />
+{% endblock head %}
+
+{% block title %}
+{% if add %}Add
+{% else %}Edit
+{% endif %} live streamer
+{% endblock %}
+
+{% block content %}
+<h2>{% if add %}Add
+{% else %}Edit
+{% endif %} live streamer</h2>
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Save</button>
+</form>
+{% endblock %}

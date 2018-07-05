@@ -1,0 +1,41 @@
+{% extends 'livestreamcurator/base.html' %}
+{% load static %}
+{% block head %}
+<link rel="stylesheet" type="text/css" href="{% static 'livestream/styles.css' %}" />
+{% endblock head %}
+
+{% block title %}{{ pageUser.get_username }}{% endblock title %}
+
+{% block content %}
+<h3><a href="{% url 'livestream:profile' pageUser.get_username %}">{{ pageUser.get_username }}</a><h3>
+<h2><a href="{% url 'livestream:group_show' pageUser.get_username group.name %}">{{ group.name }}</a><h2>
+{% for livestream in group.livestreams.all %}
+<div class="livestream">
+    <div class="livestream_name">{{ livestream.name }}</div>
+    <iframe
+        src="http://player.twitch.tv/?channel={{ livestream.twitchUsername }}&muted=true"
+        height="300"
+        width="400"
+        frameborder="0"
+        scrolling="no"
+        allowfullscreen="true">
+    </iframe>
+    
+    <div class="links">
+        {% if ownPage is True %}
+        <a href="{% url 'livestream:edit' user.get_username livestream.name %}">Edit</a>
+        <form action="{% url 'livestream:group_delete_member' user.get_username group.name %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="id" value="{{ livestream.id }}">
+            <button type="submit">Remove</button>
+        </form>
+        {% endif %}
+    </div>
+</div>
+{% endfor %}
+{% if ownPage is True %}
+<div class='livestream'>
+<a href="{% url 'livestream:add' user.get_username %}">Add</a>
+</div>
+{% endif %}
+{% endblock content %}
