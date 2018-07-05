@@ -21,6 +21,7 @@
     
     <div class="links">
         {% if ownPage is True %}
+        <a href="{% url 'livestream:edit' pageUser.get_username livestream.name%}">Edit</a>
         <form action="{% url 'livestream:delete' pageUser.get_username %}" method="post">
             {% csrf_token %}
             <input type="hidden" name="id" value="{{ livestream.id }}">

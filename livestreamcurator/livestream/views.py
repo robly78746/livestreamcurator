@@ -47,5 +47,25 @@ def deleteStream(request, username):
         livestream.delete()
     return HttpResponseRedirect(reverse('livestream:profile', args=(request.user.username,)))
     
+@login_required
+def editStream(request, username, streamer):
+    authorized = request.user.username == username
+    if not authorized:
+        raise PermissionDenied
+    livestream = get_object_or_404(Livestream, user=request.user, name=streamer)
+    if request.method == 'POST':
+        form = LivestreamForm(request.POST, instance=livestream)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('livestream:profile', args=(request.user.username,)))
+    else:
+        form = LivestreamForm(instance=livestream)
+        
+    return render(request, 'livestream/add.html', {'form': form})
+    
+@login_required
+def groupCreate(request):
+    pass
+    
 
         

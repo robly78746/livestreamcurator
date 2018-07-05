@@ -1,7 +1,7 @@
 from django import forms
 from .models import Livestream
 from django.contrib.auth.models import User
-from .twitchAPI import twitchUsernameValid
+from . import twitchAPI as TwitchAPI
 
 class LivestreamForm(forms.ModelForm):
     class Meta:
@@ -10,7 +10,6 @@ class LivestreamForm(forms.ModelForm):
         labels = {
             'twitchUsername': 'Twitch Username'
         }
-        
     # verifies livestream form fields are unique to user
     # have to override because we don't ask for user in form which normally 
     # excludes user from validation
@@ -26,7 +25,8 @@ class LivestreamForm(forms.ModelForm):
     # verifies twitch username is valid
     def clean_twitchUsername(self):
         cleaned_twitchUsername = self.cleaned_data['twitchUsername']
-        if not twitchUsernameValid(cleaned_twitchUsername):
+        
+        if not TwitchAPI.userValid(cleaned_twitchUsername):
             raise forms.ValidationError('Twitch username not found.')
         return cleaned_twitchUsername
         
