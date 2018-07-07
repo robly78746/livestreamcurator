@@ -9,59 +9,14 @@
 {% block content %}
 <h2><a href="{% url 'livestream:profile' pageUser.get_username%}">{{ pageUser.get_username }}</a><h2>
 {% if ownPage is True %}
-<a href="{% url 'livestream:group_add' user.get_username%}">Create group</a>
+<a href="{% url 'livestream:group_create' user.get_username%}">Create group</a>
 {% endif %}
-{% for group in pageUser.livestreamgroup_set.all %}
-<div class="livestreamGroup">
-    <div class="livestreamGroup_name"><a href="{% url 'livestream:group_show' pageUser.get_username group.name %}">{{ group.name }}</a></div>
-    {% for livestream in group.livestreams.all %}
-    <div class="livestreamGroup_element">
-        <iframe
-            src="http://player.twitch.tv/?channel={{ livestream.twitchUsername }}&muted=true"
-            height="300"
-            width="400"
-            frameborder="0"
-            scrolling="no"
-            allowfullscreen="true">
-        </iframe>
-    </div>
-    {% endfor %}
-    <div class="links">
-        {% if ownPage is True %}
-        <a href="{% url 'livestream:group_edit' user.get_username group.name %}">Edit</a>
-        <form action="{% url 'livestream:group_delete' user.get_username %}" method="post">
-            {% csrf_token %}
-            <input type="hidden" name="id" value="{{ group.id }}">
-            <button type="submit">Delete</button>
-        </form>
-        {% endif %}
-    </div>
-</div>
-{% endfor %}
-{% for livestream in pageUser.livestream_set.all %}
-<div class="livestream">
-    <div class="livestream_name">{{ livestream.name }}</div>
-    <iframe
-        src="http://player.twitch.tv/?channel={{ livestream.twitchUsername }}&muted=true"
-        height="300"
-        width="400"
-        frameborder="0"
-        scrolling="no"
-        allowfullscreen="true">
-    </iframe>
-    
-    <div class="links">
-        {% if ownPage is True %}
-        <a href="{% url 'livestream:edit' pageUser.get_username livestream.name%}">Edit</a>
-        <form action="{% url 'livestream:delete' pageUser.get_username %}" method="post">
-            {% csrf_token %}
-            <input type="hidden" name="id" value="{{ livestream.id }}">
-            <button type="submit">Delete</button>
-        </form>
-        {% endif %}
-    </div>
-</div>
-{% endfor %}
+<h3>Live<h3>
+{% include "livestream/livestreamGroups.html" with groups=pageUser.livestreamgroup_set.all pageUser=pageUser user=user ownPage=ownPage %}
+{% include "livestream/livestreamPlayer.html" with livestreams=live platform="twitch" ownPage=ownPage user=user %}
+<h3>Offline<h3>
+{% include "livestream/livestreamPlayer.html" with livestreams=offline platform="twitch" ownPage=ownPage user=user %}
+
 {% if ownPage is True %}
 <div class='livestream'>
 <a href="{% url 'livestream:add' pageUser.get_username %}">Add</a>

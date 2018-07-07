@@ -8,14 +8,40 @@ from django.urls import reverse
 from django.conf import settings
 from .models import Livestream, LivestreamGroup
 from .forms import LivestreamForm, LivestreamGroupForm
+from . import twitchAPI as TwitchAPI
 
 
 # Create your views here.
+
+# split livestreams into live and offline
+# output: live and offline usernames
+def liveAndOfflineStreams(livestreams):
+    if livestreams is None or len(livestreams) == 0:
+        return [], []
+    livestreamLookup = dict()
+    for livestream in livestreams:
+        livestreamLookup[livestream.twitchUserId] = livestream
+    userIds = [stream.twitchUserId for stream in livestreams]
+    streamStatuses = TwitchAPI.usersOnline(userIds)
+    liveStreams = []
+    offlineStreams = []
+    for userId in streamStatuses:
+        live = streamStatuses[userId]
+        stream = livestreamLookup[userId]
+        if live:
+            liveStreams.append(stream)
+        else:
+            offlineStreams.append(stream)
+    return liveStreams, offlineStreams
+
+# need live and offline group
 def profile(request, username):
     user = request.user
     ownPage = user.is_authenticated and user.username == username
     pageUser = get_object_or_404(User, username=username)
-    context = {'ownPage': ownPage, 'pageUser': pageUser}
+    livestreams = pageUser.livestream_set.all()
+    live, offline = liveAndOfflineStreams(livestreams)
+    context = {'ownPage': ownPage, 'pageUser': pageUser, 'live': live, 'offline': offline}
     return render(request, 'livestream/profile.html', context)
     
 @login_required
@@ -27,14 +53,23 @@ def modifyStream(request, username, streamer=None):
         raise PermissionDenied
     if streamer is None:
         # adding
+        # retrieve twitchId
+        
         livestream = Livestream(user=request.user)
     else:
         # editing
         livestream = get_object_or_404(Livestream, user=request.user, name=streamer)
     if request.method == 'POST':
         form = LivestreamForm(request.POST, instance=livestream)
+        
         if form.is_valid():
-            form.save()
+            livestream = form.save(commit=False)
+            if streamer is None:
+                userId = TwitchAPI.userId(livestream.twitchUsername)
+                if userId is None:
+                    raise Http404('Could not find Twitch user id from username')
+                livestream.twitchUserId = userId
+            livestream.save()
             return HttpResponseRedirect(reverse('livestream:profile', args=(request.user.username,)))
     else:
         form = LivestreamForm(instance=livestream)

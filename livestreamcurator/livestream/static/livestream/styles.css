@@ -1,4 +1,6 @@
 .livestream, .livestreamGroup {
+    width: auto;
+    height: auto;
     float: left;
     display: inline-block;
     margin: 10px;
