@@ -12,9 +12,10 @@
 <a href="{% url 'livestream:group_create' user.get_username%}">Create group</a>
 {% endif %}
 <h3>Live<h3>
-{% include "livestream/livestreamGroups.html" with groups=pageUser.livestreamgroup_set.all pageUser=pageUser user=user ownPage=ownPage %}
+{% include "livestream/livestreamGroups.html" with groups=liveGroups pageUser=pageUser user=user ownPage=ownPage %}
 {% include "livestream/livestreamPlayer.html" with livestreams=live platform="twitch" ownPage=ownPage user=user %}
 <h3>Offline<h3>
+{% include "livestream/livestreamGroups.html" with groups=offlineGroups pageUser=pageUser user=user ownPage=ownPage %}
 {% include "livestream/livestreamPlayer.html" with livestreams=offline platform="twitch" ownPage=ownPage user=user %}
 
 {% if ownPage is True %}

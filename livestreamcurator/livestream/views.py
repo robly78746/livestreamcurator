@@ -16,7 +16,7 @@ from . import twitchAPI as TwitchAPI
 # split livestreams into live and offline
 # output: live and offline usernames
 def liveAndOfflineStreams(livestreams):
-    if livestreams is None or len(livestreams) == 0:
+    if livestreams is None or livestreams.count() == 0:
         return [], []
     livestreamLookup = dict()
     for livestream in livestreams:
@@ -33,15 +33,38 @@ def liveAndOfflineStreams(livestreams):
         else:
             offlineStreams.append(stream)
     return liveStreams, offlineStreams
-
+    
+def liveAndOfflineGroups(groups, liveStreams):
+    liveGroups = set()
+    for livestream in liveStreams:
+        for group in livestream.livestreamgroup_set.all():
+            liveGroups.add(group)
+            
+    offlineGroups = []
+    for group in groups:
+        if group not in liveGroups:
+            offlineGroups.append(group)
+            
+    liveGroups = list(liveGroups)
+    return liveGroups, offlineGroups
+        
+        
+def home(request):
+    if request.user.is_authenticated:
+        return profile(request, request.user.username)
+    else:
+        return render(request, 'livestream/home.html')
+    
 # need live and offline group
 def profile(request, username):
     user = request.user
     ownPage = user.is_authenticated and user.username == username
-    pageUser = get_object_or_404(User, username=username)
-    livestreams = pageUser.livestream_set.all()
+    pageUser = get_object_or_404(User.objects.prefetch_related('livestream_set', 'livestreamgroup_set'), username=username)
+    livestreams = pageUser.livestream_set.all().prefetch_related('livestreamgroup_set')
+    groups = pageUser.livestreamgroup_set.all()
     live, offline = liveAndOfflineStreams(livestreams)
-    context = {'ownPage': ownPage, 'pageUser': pageUser, 'live': live, 'offline': offline}
+    liveGroups, offlineGroups = liveAndOfflineGroups(groups, live)
+    context = {'ownPage': ownPage, 'pageUser': pageUser, 'live': live, 'offline': offline, 'liveGroups': liveGroups, 'offlineGroups': offlineGroups}
     return render(request, 'livestream/profile.html', context)
     
 @login_required

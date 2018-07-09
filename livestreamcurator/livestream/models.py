@@ -9,7 +9,6 @@ class Livestream(models.Model):
     twitchUsername = models.CharField(max_length=200)
     twitchUserId = models.CharField(max_length=200)
     
-    
     def __str__(self):
         return self.name
         

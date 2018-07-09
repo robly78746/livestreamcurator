@@ -1,13 +1,52 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
-        {% block head %}{% endblock head %}
         <title>{% block title %}{% endblock title %}</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+        {% block head %}{% endblock head %}
+        
     </head>
 
     <body>
-    <!-- header -->
-    
-    {% block content %}{% endblock content %}
+        <!-- header -->
+        <!-- A grey horizontal navbar that becomes vertical on small screens -->
+        <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+          <a class="nav-link navbar-brand" href="{% url 'livestream:home' %}">Livestream Curator</a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <!-- Links -->
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+              <ul class="navbar-nav ml-auto">
+                {% if user.is_authenticated %}
+                <!-- Dropdown -->
+                <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" href="{% url 'livestream:profile' user.username %}" id="navbardrop" data-toggle="dropdown">
+                    {{ user.username }}
+                  </a>
+                  <div class="dropdown-menu bg-dark">
+                    <a class="dropdown-item text-white bg-dark" href="{% url 'logout' %}">Log Out</a>
+                  </div>
+                </li>
+                {% else %}
+                <li class="nav-item">
+                  <a class="nav-link" href="{% url 'signup' %}">Sign up</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{% url 'login' %}">Log in</a>
+                </li>
+                {% endif %}
+              </ul>
+          </div>
+
+        </nav>
+        <div class="container-fluid">
+            {% block content %}{% endblock content %}
+        </div>
     </body>
 </html>

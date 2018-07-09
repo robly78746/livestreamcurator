@@ -6,7 +6,7 @@ from . import views
 app_name = 'livestream'
 
 urlpatterns = [
-    path('', TemplateView.as_view(template_name="livestream/home.html"), name='home'),
+    path('', views.home, name='home'),
     path('<str:username>/', views.profile, name='profile'),
     path('<str:username>/add/', views.modifyStream, name='add'),
     path('<str:username>/delete/', views.deleteStream, name='delete'),
