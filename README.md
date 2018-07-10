@@ -17,28 +17,29 @@ This web application lets users manage and share the live streamers they follow 
 ## Requirements
 - [ ] Web Pages
 	- [ ] User accounts
-    	- [ ] log in
-    	- [ ] log out
-    	- [ ] sign up
+    	- [x] log in
+    	- [x] log out
+    	- [x] sign up
     	- [ ] profile page with followed streamers
 	- [ ] Manage followed live streamers
-    	- [ ] Add live streamer
-    	- [ ] Edit live streamer
-    	- [ ] Delete live streamer
-    	- [ ] Create group of live streamers
-    	- [ ] Edit group 
-    	- [ ] Delete group
-    	- [ ] Show group
+    	- [x] Add live streamer
+    	- [x] Edit live streamer
+    	- [x] Delete live streamer
+    	- [x] Create group of live streamers
+    	- [x] Edit group 
+    	- [x] Delete group
+    	- [x] Show group
 - [ ] Database Models
-	- [ ] User
+	- [x] User
 		- username
 		- password (hashed)
 	- [ ] Livestreamer
 		-  user (foreign key)
 		-  name
 		-  twitchUsername
+        -  twitchUserId
 		-  youtubeUsername
-	- [ ] Group
+	- [x] Group
 		- user (foreign key)
 		- livestreamers (many to many)
 		- name

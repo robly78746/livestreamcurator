@@ -4,23 +4,32 @@
 <link rel="stylesheet" type="text/css" href="{% static 'livestream/styles.css' %}" />
 {% endblock head %}
 
-{% block title %}{{ pageUser.get_username }}{% endblock title %}
+{% block title %}Livestream Curator: {{ pageUser.get_username }}{% endblock title %}
 
 {% block content %}
-<h2><a href="{% url 'livestream:profile' pageUser.get_username%}">{{ pageUser.get_username }}</a><h2>
-{% if ownPage is True %}
-<a href="{% url 'livestream:group_create' user.get_username%}">Create group</a>
-{% endif %}
-<h3>Live<h3>
-{% include "livestream/livestreamGroups.html" with groups=liveGroups pageUser=pageUser user=user ownPage=ownPage %}
-{% include "livestream/livestreamPlayer.html" with livestreams=live platform="twitch" ownPage=ownPage user=user %}
-<h3>Offline<h3>
-{% include "livestream/livestreamGroups.html" with groups=offlineGroups pageUser=pageUser user=user ownPage=ownPage %}
-{% include "livestream/livestreamPlayer.html" with livestreams=offline platform="twitch" ownPage=ownPage user=user %}
-
-{% if ownPage is True %}
-<div class='livestream'>
-<a href="{% url 'livestream:add' pageUser.get_username %}">Add</a>
+<div class="row">
+    <div class="col-6 text-left">
+        <a href="{% url 'livestream:profile' pageUser.get_username%}">{{ pageUser.get_username }}'s livestream collection</a>
+    </div>
+    {% if ownPage is True %}
+        <div class="col-6 text-right">
+            <a class="" href="{% url 'livestream:group_create' user.get_username%}">Create group</a>
+            <a href="{% url 'livestream:add' pageUser.get_username %}">Add</a>
+        </div>
+    {% endif %}
 </div>
-{% endif %}
+<div class="d-flex justify-content-center">
+    <h3>Live<h3>
+</div>
+<div class="d-flex justify-content-around flex-wrap">
+    {% include "livestream/livestreamGroups.html" with groups=liveGroups pageUser=pageUser user=user ownPage=ownPage %}
+    {% include "livestream/livestreamPlayer.html" with livestreams=live platform="twitch" ownPage=ownPage user=user %}
+</div>
+<div class="d-flex justify-content-center">
+    <h3>Offline<h3>
+</div>
+<div class="d-flex justify-content-around flex-wrap">
+    {% include "livestream/livestreamGroups.html" with groups=offlineGroups pageUser=pageUser user=user ownPage=ownPage %}
+    {% include "livestream/livestreamPlayer.html" with livestreams=offline platform="twitch" ownPage=ownPage user=user %}
+</div>
 {% endblock content %}

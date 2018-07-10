@@ -7,29 +7,32 @@ if you pass thumbnail, you don't need ownPage
     {% for livestream in livestreams %}
         <div class="livestream">
             {% if not thumbnail %}
-            <div class="livestream_name">{{ livestream.name }}</div>
-            {% endif %}
-                {% if platform == "twitch" %}
-                    <iframe
-                        src="http://player.twitch.tv/?channel={{ livestream.twitchUsername }}&muted=true"
-                        height="300"
-                        width="400"
-                        frameborder="0"
-                        scrolling="no"
-                        allowfullscreen="true">
-                    </iframe>
-                {% endif %}
-            {% if not thumbnail %}
-            <div class="links">
-                {% if ownPage is True %}
-                <a href="{% url 'livestream:edit' user.get_username livestream.name%}">Edit</a>
-                <form action="{% if group %}{% url 'livestream:group_delete_member' user.get_username group.name %}{% else %}{% url 'livestream:delete' user.get_username %}{% endif %}" method="post">
+            <div class="livestream_name">
+            {% if ownPage is True %}
+            <a href="{% url 'livestream:edit' user.get_username livestream.name%}">
+            <form action="{% if group %}{% url 'livestream:group_delete_member' user.get_username group.name %}{% else %}{% url 'livestream:delete' user.get_username %}{% endif %}" method="post">
                     {% csrf_token %}
                     <input type="hidden" name="id" value="{{ livestream.id }}">
-                    <button type="submit">Delete</button>
-                </form>
-                {% endif %}
+                    <button type="submit" class="close" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+            </form>
+            {% endif %}
+            {{ livestream.name }}
+            {% if ownPage is True %}
+            </a>
+            {% endif %}
             </div>
+            {% endif %}
+            {% if platform == "twitch" %}
+                <iframe
+                    src="http://player.twitch.tv/?channel={{ livestream.twitchUsername }}&muted=true"
+                    height="300"
+                    width="400"
+                    frameborder="0"
+                    scrolling="no"
+                    allowfullscreen="true">
+                </iframe>
             {% endif %}
         </div>
     {% endfor %}
