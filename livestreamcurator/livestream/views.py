@@ -158,6 +158,6 @@ def showGroup(request, username, groupName):
     user = request.user
     ownPage = user.is_authenticated and user.username == username
     pageUser = get_object_or_404(User, username=username)
-    group = get_object_or_404(LivestreamGroup, user=user, name=groupName)
+    group = get_object_or_404(LivestreamGroup, user=pageUser, name=groupName)
     context = {'ownPage': ownPage, 'pageUser': pageUser, 'group': group}
     return render(request, 'livestream/group.html', context)

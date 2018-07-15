@@ -43,3 +43,112 @@ This web application lets users manage and share the live streamers they follow 
 		- user (foreign key)
 		- livestreamers (many to many)
 		- name
+## API Backend
+- [ ] Authentication
+
+| Endpoint  | Description |
+| - | - |
+| Auth  | Log in with user and password  |
+
+Auth
+
+POST /auth 
+
+Required request body parameters
+| Name  | Type | Description |
+| - | - | - |
+| username | string | User login name |
+| password | string | User password |
+
+Response
+| Name  | Type | Description |
+| - | - | - |
+| token | string | Authentication token |
+
+- [ ] Users
+
+| Endpoint  | Description |
+| - | - |
+| Get user's followed live streams  | Retrieve list of live streamers user is following |
+| Follow live streamer | Add live streamer to a user's followed list |
+| Unfollow live streamer | Removes live streamer from user's followed list and removes live streamer if no one is following |
+
+Get user's followed live streams
+
+Authentication 
+
+None
+
+GET /users/\<username>/livestreams
+
+Response 
+
+| Name  | Type | Description |
+| - | - | - |
+| livestreamers | array | Array of livestreamerInfo, which contains name (required), livestream_id (required), twitchUsername, youtubeUsername,... |
+
+Follow live streamer 
+
+Authentication
+
+Required scope: user_follows_edit
+
+PUT /users/\<username>/follows/livestreams/\<livestream_id>
+
+Unfollow live streamer
+
+Authentication
+
+Required scope: user_follows_edit
+
+DELETE /users/\<username>/follows/livestream/\<livestream_id>
+
+Response
+
+| Name  | Type | Description |
+| - | - | - |
+| deleted | boolean | If true, the live stream was deleted. Otherwise, someone else is following this live stream, so it is not deleted. |
+
+- [ ] Livestreams
+
+| Endpoint  | Description |
+| - | - |
+| Create live stream | Create live stream entry with name and usernames |
+
+Create live stream
+
+Authentication
+
+Required scope: user_follows_edit,livestream_edit
+
+POST /livestreams
+
+Required request body parameters
+| Name  | Type | Description |
+| - | - | - |
+| name | string | Name of live streamer |
+
+Optional request body parameters
+| Name  | Type | Description |
+| - | - | - |
+| twitchUsername | string | Username of live streamer's Twitch channel |
+| youtubeUsername | string | Username of live streamer's YouTube channel |
+
+Update live stream profile 
+
+Authentication
+
+Required scope: user_follows_edit, livestream_edit
+
+PUT /livestreams/\<livestream_id>
+
+Required request body parameters
+| Name  | Type | Description |
+| - | - | - |
+| name | string | Name of live streamer |
+
+Optional request body parameters
+| Name  | Type | Description |
+| - | - | - |
+| twitchUsername | string | Username of live streamer's Twitch channel |
+| youtubeUsername | string | Username of live streamer's YouTube channel |

@@ -7,12 +7,21 @@
 {% block title %}{{ pageUser.get_username }}{% endblock title %}
 
 {% block content %}
-<h3><a href="{% url 'livestream:profile' pageUser.get_username %}">{{ pageUser.get_username }}</a><h3>
-<h2><a href="{% url 'livestream:group_show' pageUser.get_username group.name %}">{{ group.name }}</a><h2>
-{% include "livestream/livestreamPlayer.html" with livestreams=group.livestreams.all platform="twitch" members=True %}
-{% if ownPage is True %}
-<div class='livestream'>
-<a href="{% url 'livestream:add' user.get_username %}">Add</a>
+<div class="d-flex justify-content-between">
+    <div class="left">
+        <a href="{% url 'livestream:profile' pageUser.get_username%}">{{ pageUser.get_username }}'s livestream collection</a>
+    </div>
+    {% if ownPage is True %}
+        <div class="right">
+            <a class="" href="{% url 'livestream:group_create' user.get_username%}">Create group</a>
+            <a href="{% url 'livestream:group_edit' user.get_username group.name %}">Edit</a>
+        </div>
+    {% endif %}
 </div>
-{% endif %}
+<div class="d-flex justify-content-center">
+    {{ group.name }}
+</div>
+<div class="d-flex justify-content-around flex-wrap">
+    {% include "livestream/livestreamPlayer.html" with livestreams=group.livestreams.all platform="twitch" members=True %}
+</div>
 {% endblock content %}

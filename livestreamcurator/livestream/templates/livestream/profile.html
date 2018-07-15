@@ -1,18 +1,13 @@
 {% extends 'livestreamcurator/base.html' %}
-{% load static %}
-{% block head %}
-<link rel="stylesheet" type="text/css" href="{% static 'livestream/styles.css' %}" />
-{% endblock head %}
-
 {% block title %}Livestream Curator: {{ pageUser.get_username }}{% endblock title %}
 
 {% block content %}
-<div class="row">
-    <div class="col-6 text-left">
+<div class="d-flex justify-content-between">
+    <div class="left">
         <a href="{% url 'livestream:profile' pageUser.get_username%}">{{ pageUser.get_username }}'s livestream collection</a>
     </div>
     {% if ownPage is True %}
-        <div class="col-6 text-right">
+        <div class="right">
             <a class="" href="{% url 'livestream:group_create' user.get_username%}">Create group</a>
             <a href="{% url 'livestream:add' pageUser.get_username %}">Add</a>
         </div>
@@ -25,6 +20,7 @@
     {% include "livestream/livestreamGroups.html" with groups=liveGroups pageUser=pageUser user=user ownPage=ownPage %}
     {% include "livestream/livestreamPlayer.html" with livestreams=live platform="twitch" ownPage=ownPage user=user %}
 </div>
+<hr />
 <div class="d-flex justify-content-center">
     <h3>Offline<h3>
 </div>

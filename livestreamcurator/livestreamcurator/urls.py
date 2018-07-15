@@ -21,5 +21,6 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),
     path('accounts/signup', views.signup, name='signup'),
     path('admin/', admin.site.urls),
+    path('', include('api.urls')),
     path('', include('livestream.urls')),
 ]

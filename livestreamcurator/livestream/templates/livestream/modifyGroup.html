@@ -1,23 +1,28 @@
 {% extends 'livestreamcurator/base.html' %}
 
-{% load static %}
-{% block head %}
-<link rel="stylesheet" type="text/css" href="{% static 'livestream/styles.css' %}" />
-{% endblock head %}
-
 {% block title %}
 {% if add %}Create
 {% else %}Edit
 {% endif %} group
-{% endblock %}
+{% endblock title %}
 
 {% block content %}
-<h2>{% if add %}Create
-{% else %}Edit
-{% endif %} group</h2>
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Save</button>
-</form>
-{% endblock %}
+<div class="d-flex justify-content-center">
+    <div class="d-flex flex-column">
+        <div class="text-center">
+            <h2>
+            {% if add %}
+            Create
+            {% else %}
+            Edit
+            {% endif %} group
+            <h2>
+        </div>
+        <form method="post" class="d-flex flex-column align-items-center">
+          {% csrf_token %}
+          {{ form.as_p }}
+          <button type="submit" class="">Save</button>
+        </form>
+    </div>
+</div>
+{% endblock content %}

@@ -7,9 +7,18 @@ if you pass thumbnail, you don't need ownPage
     {% for livestream in livestreams %}
         <div class="livestream">
             {% if not thumbnail %}
-            <div class="livestream_name">
+            <div class="livestream_name d-flex 
             {% if ownPage is True %}
-            <a href="{% url 'livestream:edit' user.get_username livestream.name%}">
+            justify-content-between">
+            <div class="placeholder">
+            </div>
+            <a href="{% url 'livestream:edit' user.get_username livestream.name%}" >
+            {% else %}
+            justify-content-center">
+            {% endif %}
+            {{ livestream.name }}
+            {% if ownPage is True %}
+            </a>
             <form action="{% if group %}{% url 'livestream:group_delete_member' user.get_username group.name %}{% else %}{% url 'livestream:delete' user.get_username %}{% endif %}" method="post">
                     {% csrf_token %}
                     <input type="hidden" name="id" value="{{ livestream.id }}">
@@ -17,10 +26,6 @@ if you pass thumbnail, you don't need ownPage
                       <span aria-hidden="true">&times;</span>
                     </button>
             </form>
-            {% endif %}
-            {{ livestream.name }}
-            {% if ownPage is True %}
-            </a>
             {% endif %}
             </div>
             {% endif %}

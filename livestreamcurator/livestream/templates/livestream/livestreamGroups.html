@@ -5,18 +5,28 @@ parameters: groups pageUser user ownPage
 {% if groups %}
     {% for group in groups %}
     <div class="livestreamGroup">
-        <div class="livestreamGroup_name"><a href="{% url 'livestream:group_show' pageUser.get_username group.name %}">{{ group.name }}</a></div>
-        {% include "livestream/livestreamPlayer.html" with livestreams=group.livestreams.all thumbnail=True platform="twitch" %}
-        <div class="links">
+        <div class="livestreamGroup_name d-flex
             {% if ownPage is True %}
-            <a href="{% url 'livestream:group_edit' user.get_username group.name %}">Edit</a>
-            <form action="{% url 'livestream:group_delete' user.get_username %}" method="post">
-                {% csrf_token %}
-                <input type="hidden" name="id" value="{{ group.id }}">
-                <button type="submit">Delete</button>
-            </form>
+            justify-content-between">
+            <div class="placeholder">
+            </div>
+            {% else %}
+            justify-content-center">
+            {% endif %}
+            <a href="{% url 'livestream:group_show' pageUser.get_username group.name %}">
+            {{ group.name }}
+            </a>
+            {% if ownPage is True %}
+                <form action="{% url 'livestream:group_delete' user.get_username %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="id" value="{{ group.id }}">
+                    <button type="submit" class="close" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                </form>
             {% endif %}
         </div>
+        {% include "livestream/livestreamPlayer.html" with livestreams=group.livestreams.all thumbnail=True platform="twitch" %}
     </div>
     {% endfor %}
 {% endif %}

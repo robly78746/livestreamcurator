@@ -9,6 +9,8 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
         {% block head %}{% endblock head %}
+        {% load static %}
+        <link rel="stylesheet" type="text/css" href="{% static 'livestream/styles.css' %}" />
         
     </head>
 
@@ -29,7 +31,7 @@
                   <a class="nav-link dropdown-toggle" href="{% url 'livestream:profile' user.username %}" id="navbardrop" data-toggle="dropdown">
                     {{ user.username }}
                   </a>
-                  <div class="dropdown-menu bg-dark">
+                  <div class="dropdown-menu bg-dark dropdown-menu-right">
                     <a class="dropdown-item text-white bg-dark" href="{% url 'logout' %}">Log Out</a>
                   </div>
                 </li>
@@ -45,7 +47,7 @@
           </div>
 
         </nav>
-        <div class="container-fluid">
+        <div class="container-fluid bg-secondary text-color">
             {% block content %}{% endblock content %}
         </div>
     </body>
