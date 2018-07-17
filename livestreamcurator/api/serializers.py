@@ -1,30 +1,27 @@
 from rest_framework import serializers
-from .models import Livestream, TwitchInfo
+from .models import Livestream
 from django.contrib.auth.models import User
-from django.shortcuts import get_object_or_404
 from . import TwitchAPI
 
+from django.shortcuts import get_object_or_404
+
 class LivestreamSerializer(serializers.ModelSerializer):
-    twitchUsername = serializers.CharField(write_only=True)
     
     class Meta:
         model = Livestream
-        fields = ('id', 'name', 'twitchUsername', 'twitchInfo')
-        read_only_fields = ('twitchInfo',)
+        fields = ('id', 'name', 'twitchUsername')
         depth = 1
         
     def create(self, validated_data):
-        username = validated_data.pop('twitchUsername')
-        follower = get_object_or_404(User, pk=self.context['user_id'])
+        user = self.context['user']
+        validated_data['user'] = user
         livestream = super(LivestreamSerializer, self).create(validated_data)
-        twitchInfo, created = TwitchInfo.objects.get_or_create(username=username)
-        if created:
-            twitchInfo.userId = TwitchAPI.userId(twitchUsername)
-            twitchInfo.save()
-        livestream.twitchInfo = twitchInfo
-        livestream.followers.add(follower)
-        livestream.save()
         return livestream
+        
+    def validate_twitchUsername(self, value):
+        if not TwitchAPI.userValid(value):
+            raise serializers.ValidationError("Invalid Twitch username")
+        return value
             
     
 class UserSerializer(serializers.ModelSerializer):

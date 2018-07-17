@@ -32,8 +32,7 @@ class Users(APIView):
 
 class UserLivestreams(APIView):
     def get(self, request, user_id, format=None):
-        user = get_object_or_404(User.objects.all().prefetch_related('livestream_set'), pk=user_id)
-        livestreams = user.livestream_set.all()
+        livestreams = Livestream.objects.filter(user__id=user_id)
         serializer = LivestreamSerializer(livestreams, many=True)
         return Response(serializer.data)
     
@@ -47,13 +46,11 @@ class Livestreams(APIView):
     permission_classes = (IsAuthenticated,)
     def post(self, request, format=None):
         # if user follows streamer with given name already, then return all streamers with that name
-        user = get_object_or_404(User.objects.all().prefetch_related('livestream_set'), pk=request.user.id)
-        name = request.data['name']
-        followedStreamers = user.livestream_set.filter(name=name)
+        followedStreamers = Livestream.objects.filter(user__id=request.user.id)
         if followedStreamers.exists():
             serializer = LivestreamSerializer(followedStreamers, many=True)
         else:
-            serializer = LivestreamSerializer(data=request.data, context={'user_id': user.id})
+            serializer = LivestreamSerializer(data=request.data, context={'user': request.user})
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
