@@ -13,8 +13,7 @@ class LivestreamSerializer(serializers.ModelSerializer):
         depth = 1
         
     def create(self, validated_data):
-        user = self.context['user']
-        validated_data['user'] = user
+        validated_data['user'] = self.context.get('user', validated_data['user'])
         livestream = super(LivestreamSerializer, self).create(validated_data)
         return livestream
         
@@ -22,7 +21,13 @@ class LivestreamSerializer(serializers.ModelSerializer):
         if not TwitchAPI.userValid(value):
             raise serializers.ValidationError("Invalid Twitch username")
         return value
-            
+    
+    def update(self, instance, validated_data):
+        instance.user = self.context.get('user', instance.user)
+        instance.name = validated_data.get('name', instance.name)
+        instance.twitchUsername = validated_data.get('twitchUsername', instance.twitchUsername)
+        instance.save()
+        return instance
     
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)

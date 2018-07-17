@@ -11,7 +11,7 @@ urlpatterns = [
     path('users/<int:user_id>/follows/livestreams/<int:livestream_id>', views.UserFollowStream.as_view(), name='user_follow_stream'),
     path('users/<int:user_id>/livestreams', views.UserLivestreams.as_view(), name='user_livestreams'),
     path('users', views.Users.as_view(), name='users'),
-    path('livestreams/<int:livestream_id>', views.modify_livestream, name='modify_livestream'),
+    path('livestreams/<int:livestream_id>', views.Livestreams.as_view(), name='update_livestream'),
     path('livestreams', views.Livestreams.as_view(), name='livestreams'),
     
 ]
