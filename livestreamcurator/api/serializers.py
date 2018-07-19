@@ -12,11 +12,6 @@ class LivestreamSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'twitchUsername')
         depth = 1
         
-    def create(self, validated_data):
-        validated_data['user'] = self.context.get('user', validated_data['user'])
-        livestream = super(LivestreamSerializer, self).create(validated_data)
-        return livestream
-        
     def validate_twitchUsername(self, value):
         if not TwitchAPI.userValid(value):
             raise serializers.ValidationError("Invalid Twitch username")
