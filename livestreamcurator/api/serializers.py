@@ -10,7 +10,6 @@ class LivestreamSerializer(serializers.ModelSerializer):
     class Meta:
         model = Livestream
         fields = ('id', 'name', 'twitchUsername')
-        depth = 1
         
     def validate_twitchUsername(self, value):
         if not TwitchAPI.userValid(value):

@@ -55,3 +55,6 @@ class Livestreamer(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = LivestreamSerializer
     queryset = Livestream.objects.all()
     
+#class UserLivestreamGroups(generics.ListCreateAPIView):
+    
+    

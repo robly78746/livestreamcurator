@@ -11,6 +11,7 @@ urlpatterns = [
     path('users', views.Users.as_view(), name='users'),
     path('users/<int:user_id>/livestreams', views.UserLivestreams.as_view(), name='user_livestreams'),
     path('livestreams/<int:pk>', views.Livestreamer.as_view(), name='update_livestream'),
+    #path('users/<int:user_id>/groups', views.UserLivestreamGroups.as_view(), name='user_livestream_groups'),
     
 ]
 

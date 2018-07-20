@@ -2,6 +2,9 @@ from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.models import AnonymousUser, User
 from rest_framework.test import APITestCase
+from rest_framework import status
+from api.models import Livestream
+from rest_framework.authtoken.models import Token
 
 class UsersTests(APITestCase):
     def setUp(self):
@@ -13,7 +16,10 @@ class UsersTests(APITestCase):
         username = 'robzom'
         params = {'username':username}
         response = self.client.get(self.url, params, format='json')
-        userInfo = response.data['results'][0]
+        data = response.data
+        # next, previous, results
+        self.assertEqual(len(data), 3)
+        userInfo = data['results'][0]
         self.assertEqual(len(userInfo), 2)
         self.assertTrue(type(userInfo['id']) is int)
         self.assertEqual(userInfo['username'], username)
@@ -28,12 +34,12 @@ class UsersTests(APITestCase):
         self.assertTrue(userInfo1['username'] != userInfo2['username'])
         self.assertTrue(userInfo1['id'] != userInfo2['id'])
         
-    def test_no_usernames(self):
+    def test_get_user_no_usernames(self):
         response = self.client.get(self.url, format='json')
         self.assertEqual(len(response.data), 3)
         self.assertEqual(len(response.data['results']), 2)
         
-    def test_get_invalid_username(self):
+    def test_get_user_invalid_username(self):
         usernames = ['robzom', 'what']
         params = {'username':','.join(usernames)}
         response = self.client.get(self.url, params, format='json')
@@ -42,3 +48,74 @@ class UsersTests(APITestCase):
         self.assertEqual(len(data), 2)
         self.assertTrue(type(data['id']) is int)
         self.assertEqual(data['username'], 'robzom')
+        
+    def test_paging(self):
+        # create 99 more users to make 2 pages necessary
+        baseUsername = 'robTest'
+        for i in range(99):
+            User.objects.create_user(username=baseUsername + str(i), password='password')
+        response = self.client.get(self.url, format='json')
+        self.assertEqual(len(response.data['results']), 100)
+        
+        nextPageUrl = response.data['next']
+        response2 = self.client.get(nextPageUrl, format='json')
+        self.assertEqual(len(response2.data['results']), 1)
+        
+    def test_create_user(self):
+        newUsername = 'newUser'
+        bodyParams = {'username': newUsername, 'password': 'password'}
+        self.client.post(self.url, bodyParams, format='json')
+        users = User.objects.all()
+        self.assertEqual(users.count(), 3)
+        newUser = users.filter(username=newUsername)
+        self.assertEqual(newUser.count(), 1)
+
+    def test_create_user_missing_field(self):
+        newUsername = 'newUser'
+        bodyParams = {'username': newUsername}
+        response = self.client.post(self.url, bodyParams, format='json')
+        users = User.objects.all()
+        self.assertEqual(users.count(), 2)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        
+class UserLivestreamsTests(APITestCase):
+    def setUp(self):
+        self.user1 = User.objects.create_user(username='robzom', password='password')
+        self.streamerName = 'Forsen'
+        self.twitchUsername = 'forsen'
+        self.livestream1 = Livestream.objects.create(user=self.user1, name=self.streamerName, twitchUsername=self.twitchUsername)
+        self.urlTag = 'api:user_livestreams'
+        self.token = Token.objects.create(user=self.user1)
+        self.token.save()
+    def test_list_livestreamers(self):
+        url = reverse(self.urlTag, args=(self.user1.id,))
+        response = self.client.get(url, format='json')
+        data = response.data['results']
+        self.assertEqual(len(data), 1)
+        self.assertEqual(len(data[0]), 3)
+        livestreamerInfo = data[0]
+        self.assertTrue(type(livestreamerInfo['id']) is int)
+        self.assertEqual(livestreamerInfo['name'], self.streamerName)
+        self.assertEqual(livestreamerInfo['twitchUsername'], self.twitchUsername)
+        
+    def test_list_invalid_user_livestreams(self):
+        url = reverse(self.urlTag, args=(0,))
+        response = self.client.get(url, format='json')
+        data = response.data['results']
+        self.assertEqual(len(data), 0)
+        
+    def test_create_livestreamer(self):
+        url = reverse(self.urlTag, args=(self.user1.id,))
+        name = 'Kers55'
+        twitchUsername = 'kers55'
+        params = {'name':name,'twitchUsername':twitchUsername}
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
+        response = self.client.post(url, params, format='json')
+        data = response.data
+        self.assertTrue(type(data['id']) is int)
+        self.assertEqual(data['name'], name)
+        self.assertEqual(data['twitchUsername'], twitchUsername)
+        queryset = Livestream.objects.filter(name=name, twitchUsername=twitchUsername)
+        self.assertEqual(queryset.count(), 1)
+        
+    
