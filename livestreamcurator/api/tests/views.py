@@ -17,10 +17,7 @@ class UsersTests(APITestCase):
         params = {'username':username}
         response = self.client.get(self.url, params, format='json')
         data = response.data
-        # next, previous, results
-        self.assertEqual(len(data), 3)
         userInfo = data['results'][0]
-        self.assertEqual(len(userInfo), 2)
         self.assertTrue(type(userInfo['id']) is int)
         self.assertEqual(userInfo['username'], username)
         
@@ -28,7 +25,6 @@ class UsersTests(APITestCase):
         usernames = ['robzom', 'rob1']
         params = {'username':','.join(usernames)}
         response = self.client.get(self.url, params, format='json')
-        self.assertEqual(len(response.data), 3)
         userInfo1, userInfo2 = response.data['results']
         self.assertTrue(userInfo1['username'] in usernames and userInfo2['username'] in usernames)
         self.assertTrue(userInfo1['username'] != userInfo2['username'])
@@ -36,20 +32,27 @@ class UsersTests(APITestCase):
         
     def test_get_user_no_usernames(self):
         response = self.client.get(self.url, format='json')
-        self.assertEqual(len(response.data), 3)
         self.assertEqual(len(response.data['results']), 2)
         
-    def test_get_user_invalid_username(self):
+    def test_get_user_invalid_and_valid_usernames(self):
         usernames = ['robzom', 'what']
         params = {'username':','.join(usernames)}
         response = self.client.get(self.url, params, format='json')
-        self.assertEqual(len(response.data), 3)
         data = response.data['results'][0]
-        self.assertEqual(len(data), 2)
         self.assertTrue(type(data['id']) is int)
         self.assertEqual(data['username'], 'robzom')
         
-    def test_paging(self):
+    def test_get_user_one_page(self):
+        username = 'robzom'
+        params = {'username':username}
+        response = self.client.get(self.url, params, format='json')
+        data = response.data
+        # next, previous, results
+        self.assertEqual(data['previous'], None)
+        self.assertEqual(data['next'], None)
+        self.assertEqual(data['results'][0]['username'], username)
+        
+    def test_get_user_two_pages(self):
         # create 99 more users to make 2 pages necessary
         baseUsername = 'robTest'
         for i in range(99):
@@ -87,6 +90,7 @@ class UserLivestreamsTests(APITestCase):
         self.urlTag = 'api:user_livestreams'
         self.token = Token.objects.create(user=self.user1)
         self.token.save()
+        
     def test_list_livestreamers(self):
         url = reverse(self.urlTag, args=(self.user1.id,))
         response = self.client.get(url, format='json')
@@ -104,6 +108,27 @@ class UserLivestreamsTests(APITestCase):
         data = response.data['results']
         self.assertEqual(len(data), 0)
         
+    def test_list_livestreamers_one_page(self):
+        url = reverse(self.urlTag, args=(self.user1.id,))
+        response = self.client.get(url, format='json')
+        data = response.data
+        self.assertEqual(data['previous'], None)
+        self.assertEqual(data['next'], None)
+        self.assertEqual(len(data['results']), 1)
+        
+    def test_list_livestreamers_two_pages(self):
+        # create 99 more users to make 2 pages necessary
+        baseUsername = 'robTest'
+        for i in range(100):
+            Livestream.objects.create(user=self.user1, name=self.streamerName + str(i), twitchUsername=self.twitchUsername)
+        url = reverse(self.urlTag, args=(self.user1.id,))
+        response = self.client.get(url, format='json')
+        self.assertEqual(len(response.data['results']), 100)
+        
+        nextPageUrl = response.data['next']
+        response2 = self.client.get(nextPageUrl, format='json')
+        self.assertEqual(len(response2.data['results']), 1)
+        
     def test_create_livestreamer(self):
         url = reverse(self.urlTag, args=(self.user1.id,))
         name = 'Kers55'
@@ -117,5 +142,40 @@ class UserLivestreamsTests(APITestCase):
         self.assertEqual(data['twitchUsername'], twitchUsername)
         queryset = Livestream.objects.filter(name=name, twitchUsername=twitchUsername)
         self.assertEqual(queryset.count(), 1)
-        
     
+    def test_create_livestreamer_unauthenticated(self):
+        url = reverse(self.urlTag, args=(self.user1.id,))
+        name = 'Kers55'
+        twitchUsername = 'kers55'
+        params = {'name':name,'twitchUsername':twitchUsername}
+        response = self.client.post(url, params, format='json')
+        data = response.data
+        queryset = Livestream.objects.filter(name=name, twitchUsername=twitchUsername)
+        self.assertFalse(queryset.exists())
+        
+    def test_create_livestreamer_invalid_username(self):
+        url = reverse(self.urlTag, args=(self.user1.id,))
+        name = 'Kers55'
+        twitchUsername = 'alskdjasdjlaskd'
+        params = {'name':name,'twitchUsername':twitchUsername}
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
+        response = self.client.post(url, params, format='json')
+        data = response.data
+        queryset = Livestream.objects.filter(name=name, twitchUsername=twitchUsername)
+        self.assertFalse(queryset.exists())
+        
+    def test_create_livestreamer_duplicate_name(self):
+        url = reverse(self.urlTag, args=(self.user1.id,))
+        name = 'Forsen'
+        twitchUsername = 'kers55'
+        params = {'name':name,'twitchUsername':twitchUsername}
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
+        response = self.client.post(url, params, format='json')
+        queryset = Livestream.objects.filter(name=name)
+        self.assertEqual(queryset.count(), 1)
+        
+class LivestreamerTests(APITestCase):
+    def setUp(self):
+        pass
+    def test_retrieve(self):
+        pass
