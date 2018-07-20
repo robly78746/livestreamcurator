@@ -44,7 +44,7 @@ This web application lets users manage and share the live streamers they follow 
 		- livestreamers (many to many)
 		- name
 ## API Backend
-- [ ] Authentication
+- [x] Authentication
 
 | Endpoint  | Description |
 | - | - |
@@ -69,9 +69,53 @@ Response
 
 | Endpoint  | Description |
 | - | - |
+| Get users | Get user info |
+| Create user | Create user account |
 | Get user's followed live streams  | Retrieve list of live streamers user is following |
-| Follow live streamer | Add live streamer to a user's followed list |
-| Unfollow live streamer | Removes live streamer from user's followed list and removes live streamer if no one is following |
+| Create livestream followed by user | Add live streamer to a user's followed list |
+
+Get users
+
+Authentication
+
+None
+
+GET /users?username=bob,rachel
+
+Optional request url parameters
+| Name  | Type | Description |
+| - | - | - |
+| username | string | account's username |
+
+Response
+
+| Name | Type | Description |
+| - | - | - |
+| id | int | User id |
+| username | string | account's username |
+
+Create user
+
+Authentication
+
+None
+
+POST /users
+
+Required request body parameters
+| Name  | Type | Description |
+| - | - | - |
+| username | string | account's username |
+| password | string | account's password |
+
+Response
+
+| Name | Type | Description |
+| - | - | - |
+| id | int | User id |
+| username | string | User's username |
+
+
 
 Get user's followed live streams
 
@@ -79,62 +123,55 @@ Authentication
 
 None
 
-GET /users/\<username>/livestreams
+GET /users/\<user_id>/livestreams
 
 Response 
-
 | Name  | Type | Description |
 | - | - | - |
-| livestreamers | array | Array of livestreamerInfo, which contains name (required), livestream_id (required), twitchUsername, youtubeUsername,... |
+| id | int | livestreamer id |
+| name | string | livestreamer's name |
+| twitchUsername | string | livestreamer's Twitch username |
 
-Follow live streamer 
+Create live streamer followed by user
 
 Authentication
 
 Required scope: user_follows_edit
 
-PUT /users/\<username>/follows/livestreams/\<livestream_id>
+POST /users/\<user_id>/livestreams
 
-Unfollow live streamer
-
-Authentication
-
-Required scope: user_follows_edit
-
-DELETE /users/\<username>/follows/livestream/\<livestream_id>
-
-Response
-
+Required request body parameters
 | Name  | Type | Description |
 | - | - | - |
-| deleted | boolean | If true, the live stream was deleted. Otherwise, someone else is following this live stream, so it is not deleted. |
+| name | string | name of live streamer |
+| twitchUsername | string | live streamer's Twitch username |
 
 - [ ] Livestreams
 
 | Endpoint  | Description |
 | - | - |
-| Create live stream | Create live stream entry with name and usernames |
+| Get live stream | Get live streamer info |
+| Update live stream | Update live streamer info |
+| Patch live stream | Patch live streamer info |
+| Delete live stream | Delete live streamer |
 
-Create live stream
+
+Get live stream
 
 Authentication
 
 Required scope: user_follows_edit,livestream_edit
 
-POST /livestreams
+GET /livestreams/\<livestream_id>
 
-Required request body parameters
+Response
 | Name  | Type | Description |
 | - | - | - |
-| name | string | Name of live streamer |
+| id | int | livestreamer id |
+| name | string | livestreamer's name |
+| twitchUsername | string | livestreamer's Twitch username |
 
-Optional request body parameters
-| Name  | Type | Description |
-| - | - | - |
-| twitchUsername | string | Username of live streamer's Twitch channel |
-| youtubeUsername | string | Username of live streamer's YouTube channel |
-
-Update live stream profile 
+Update live stream  
 
 Authentication
 
@@ -151,4 +188,39 @@ Optional request body parameters
 | Name  | Type | Description |
 | - | - | - |
 | twitchUsername | string | Username of live streamer's Twitch channel |
-| youtubeUsername | string | Username of live streamer's YouTube channel |
+
+Response
+| Name  | Type | Description |
+| - | - | - |
+| id | int | livestreamer id |
+| name | string | livestreamer's name |
+| twitchUsername | string | livestreamer's Twitch username |
+
+Patch (partially update) live stream  
+
+Authentication
+
+Required scope: user_follows_edit, livestream_edit
+
+PATCH /livestreams/\<livestream_id>
+
+Optional request body parameters
+| Name  | Type | Description |
+| - | - | - |
+| name | string | Name of live streamer |
+| twitchUsername | string | Username of live streamer's Twitch channel |
+
+Response
+| Name  | Type | Description |
+| - | - | - |
+| id | int | livestreamer id |
+| name | string | livestreamer's name |
+| twitchUsername | string | livestreamer's Twitch username |
+
+Delete live stream  
+
+Authentication
+
+Required scope: user_follows_edit, livestream_edit
+
+DELETE /livestreams/\<livestream_id>
