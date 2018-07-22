@@ -176,6 +176,29 @@ class UserLivestreamsTests(APITestCase):
         
 class LivestreamerTests(APITestCase):
     def setUp(self):
-        pass
-    def test_retrieve(self):
-        pass
+        self.user1 = User.objects.create_user(username='robzom', password='password')
+        self.streamerName = 'Forsen'
+        self.twitchUsername = 'forsen'
+        self.livestream1 = Livestream.objects.create(user=self.user1, name=self.streamerName, twitchUsername=self.twitchUsername)
+        self.urlTag = 'api:update_livestream'
+        self.token = Token.objects.create(user=self.user1)
+        self.token.save()
+        
+    def test_retrieve_livestreamer(self):
+        url = reverse(self.urlTag, args=(self.livestream1.id,))
+        response = self.client.get(url, format='json')
+        livestreamInfo = response.data
+        self.assertEqual(livestreamInfo['id'], self.livestream1.id)
+        self.assertEqual(livestreamInfo['name'], self.streamerName)
+        self.assertEqual(livestreamInfo['twitchUsername'], self.twitchUsername)
+        
+    def test_update_livestream(self):
+        url = reverse(self.urlTag, args=(self.livestream1.id,))
+        newName = 'Nani'
+        newUsername = 'nani'
+        params = {'name': newName, 'twitchUsername': newUsername}
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
+        self.client.put(url, params, format='json')
+        updatedLivestream = Livestream.objects.get(pk=self.livestream1.id)
+        self.assertEqual(updatedLivestream.name, newName)
+        self.assertEqual(updatedLivestream.twitchUsername, newUsername)

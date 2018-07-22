@@ -17,9 +17,14 @@ class PasswordField extends Component {
     
     render() {
         return (
-            <input label='Password' name='password' onChange={this.props.handleChange} type='password'/>
+            <input placeholder={this.props.placeholder} name={this.props.name} onChange={this.props.handleChange} type='password'/>
         );
     }
 }
+
+PasswordField.defaultProps = {
+    placeholder: 'Password',
+    name: 'password'
+};
 
 export default PasswordField;

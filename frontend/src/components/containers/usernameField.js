@@ -17,7 +17,7 @@ class UsernameField extends Component {
     
     render() {
         return (
-            <input label='Username' name='username' onChange={this.props.handleChange}/>
+            <input placeholder='Username' name='username' onChange={this.props.handleChange}/>
         );
     }
 }
