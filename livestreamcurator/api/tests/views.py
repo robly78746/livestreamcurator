@@ -202,3 +202,10 @@ class LivestreamerTests(APITestCase):
         updatedLivestream = Livestream.objects.get(pk=self.livestream1.id)
         self.assertEqual(updatedLivestream.name, newName)
         self.assertEqual(updatedLivestream.twitchUsername, newUsername)
+        
+    def test_delete_livestream(self):
+        url = reverse(self.urlTag, args=(self.livestream1.id,))
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
+        self.client.delete(url, format='json')
+        livestreams = Livestream.objects.all()
+        self.assertFalse(livestreams.exists())
