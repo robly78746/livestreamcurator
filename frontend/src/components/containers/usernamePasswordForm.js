@@ -3,7 +3,7 @@ import FormErrors from '../presentational/formErrors';
 import UsernameField from '../presentational/usernameField';
 import PasswordField from '../presentational/passwordField';
 
-class UserPasswordForm extends Component {
+class UsernamePasswordForm extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -22,7 +22,7 @@ class UserPasswordForm extends Component {
     
     handleChange(event, valid=true, errors=[]) {
         const name = event.target.name;
-        const value = event.target.value;
+        const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
         let newFormErrors = this.state.formErrors;
         newFormErrors[name] = errors;
         let validKeyName = name + 'Valid';
@@ -57,4 +57,4 @@ class UserPasswordForm extends Component {
 
 
 
-export default UserPasswordForm;
+export default UsernamePasswordForm;

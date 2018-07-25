@@ -230,8 +230,17 @@ class LivestreamerTests(APITestCase):
         self.assertEqual(updatedLivestream.name, self.streamerName)
         self.assertEqual(updatedLivestream.twitchUsername, self.twitchUsername)
         
-    def test_delete_livestream(self):
+    def test_delete_livestream_unauthenticated(self):
         url = reverse(self.urlTag, args=(self.livestream1.id,))
         self.client.delete(url, format='json')
         livestream = Livestream.objects.get(pk=self.livestream1.id)
         self.assertTrue(livestream is not None)
+        
+    def test_partial_update_livestream_unauthenticated(self):
+        url = reverse(self.urlTag, args=(self.livestream1.id,))
+        newUsername = 'nani'
+        params = {'twitchUsername': newUsername}
+        self.client.patch(url, params, format='json')
+        updatedLivestream = Livestream.objects.get(pk=self.livestream1.id)
+        self.assertEqual(updatedLivestream.name, self.streamerName)
+        self.assertEqual(updatedLivestream.twitchUsername, self.twitchUsername)

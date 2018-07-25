@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 
 export default function FormErrors ({errors={}}){
-    console.log(errors);
     return (
         <ul>
             {

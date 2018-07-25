@@ -37,7 +37,8 @@ class PasswordField extends Component {
                     handleChange={this.handleChange}
                     name='password'
                     displayName='Password'
-                    value={this.props.value}/>
+                    value={this.props.value}
+                    type={this.props.showPassword ? 'text' : 'password'}/>
                 <ControlledInputField
                     handleChange={this.handleShowPasswordToggle}
                     type='checkbox'

@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import LoginForm from './components/containers/loginForm';
-import SignupForm from './components/containers/signupForm';
+import LoginForm from './components/presentational/loginForm';
+import SignupForm from './components/presentational/signupForm';
 
 class App extends Component {
   render() {
@@ -24,6 +24,7 @@ class App extends Component {
           To get started, edit <code>src/App.js</code> and save to reload.
         </p>
         <SignupForm />
+        <hr/>
         <LoginForm />
       </div>
     );
