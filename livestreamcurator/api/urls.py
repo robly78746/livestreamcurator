@@ -8,6 +8,7 @@ app_name = 'api'
 
 urlpatterns = [
     path('auth', drf_views.obtain_auth_token, name='auth'),
+    path('user', views.User.as_view(), name='user'),
     path('users', views.Users.as_view(), name='users'),
     path('users/<int:user_id>/livestreams', views.UserLivestreams.as_view(), name='user_livestreams'),
     path('livestreams/<int:pk>', views.Livestreamer.as_view(), name='update_livestream'),

@@ -1,6 +1,8 @@
 import axios from 'axios';
 import _ from 'lodash';
 import { URL, LOGIN, SIGNUP } from '../config/Api';
+import { setToken, unsetToken } from '../store/actions';
+import { store } from '../store';
 
 export function InvalidCredentialsException(message) {
     this.message = message;
@@ -24,15 +26,14 @@ export function signup(username, password) {
         });
 }
 
-export function login(username, password) {
+export function login(username, password, callback) {
   return axios
     .post(URL + LOGIN, {
       username,
       password
     })
     .then(function (response) {
-        token = response.data.token;
-        console.log(token);
+        store.dispatch(setToken(response.data.token));
     })
     .catch(function (error) {
       // raise different exception if due to invalid credentials
@@ -43,4 +44,10 @@ export function login(username, password) {
     });
 }
 
-export var token = '';
+export function signout() {
+    store.dispatch(unsetToken());
+}
+
+export function loggedIn() {
+    return store.getState().token !== null;
+}

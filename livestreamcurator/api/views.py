@@ -28,8 +28,14 @@ class Users(generics.ListCreateAPIView):
             usernames = usernames.split(',')
             queryset = queryset.filter(username__in=usernames)
         return queryset
+        
+class User(generics.RetrieveUpdateDestroyAPIView):
+    permission_class = (IsAuthenticated,)
+    serializer_class = UserSerializer
     
-
+    def get_object(self):
+        return self.request.user
+        
 class UserLivestreams(generics.ListCreateAPIView):
     # get list of streamers that a user follows
     serializer_class = LivestreamSerializer

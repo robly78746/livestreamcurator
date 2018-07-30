@@ -244,3 +244,17 @@ class LivestreamerTests(APITestCase):
         updatedLivestream = Livestream.objects.get(pk=self.livestream1.id)
         self.assertEqual(updatedLivestream.name, self.streamerName)
         self.assertEqual(updatedLivestream.twitchUsername, self.twitchUsername)
+        
+    def test_retrieve_livestreamer_invalid_id(self):
+        url = reverse(self.urlTag, args=(0,))
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 404)
+        
+    def test_update_livestream_invalid_id(self):
+        url = reverse(self.urlTag, args=(0,))
+        newName = 'Nani'
+        newUsername = 'nani'
+        params = {'name': newName, 'twitchUsername': newUsername}
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
+        response = self.client.put(url, params, format='json')
+        self.assertEqual(response.status_code, 404)

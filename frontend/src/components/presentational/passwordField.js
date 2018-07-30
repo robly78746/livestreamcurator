@@ -1,33 +1,17 @@
 import React, { Component } from 'react';
 import ControlledInputField from './controlledInputField';
 import { validate_password } from '../../util/Validation';
-import _ from 'lodash';
 
 class PasswordField extends Component {
     constructor(props) {
         super(props);
         this.handleChange = this.handleChange.bind(this);
-        this.handleShowPasswordToggle = this.handleShowPasswordToggle.bind(this);
     }
     
     handleChange(event) {
         const value = event.target.value;
         let validation = validate_password(value);
-        let valid = validation.valid;
-        let errors = validation.errors;
-        
-        //add id to error messages for iteration
-        errors = errors.map((error) => {
-            let message = error
-            error = {message: message, id: _.uniqueId()};
-            return error;
-        });
-        
-        this.props.handleChange(event, valid, errors);
-    }
-    
-    handleShowPasswordToggle(event) {
-        this.props.handleChange(event);
+        this.props.handleChange(event, validation.valid, validation.errors);
     }
     
     render() {
@@ -40,7 +24,7 @@ class PasswordField extends Component {
                     value={this.props.value}
                     type={this.props.showPassword ? 'text' : 'password'}/>
                 <ControlledInputField
-                    handleChange={this.handleShowPasswordToggle}
+                    handleChange={this.props.handleChange}
                     type='checkbox'
                     displayName='Show password'
                     label={true}

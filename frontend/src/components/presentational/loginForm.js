@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import UsernamePasswordForm from '../containers/usernamePasswordForm';
 import { login } from '../../util/Auth';
 

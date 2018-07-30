@@ -1,32 +1,21 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/lib/integration/react';
+import { persistor, store } from './store';
 import './App.css';
-import LoginForm from './components/presentational/loginForm';
-import SignupForm from './components/presentational/signupForm';
+import LoadingView from './components/presentational/loadingView';
+import NavbarContainer from './components/containers/navbarContainer';
+import Main from './components/containers/main';
 
 class App extends Component {
   render() {
     return (
-      <div className="App">
-        <head>
-            <meta charSet="utf-8"/>
-            <meta name="viewport" content="width=device-width, initial-scale=1"/>
-            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css"/>
-            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
-            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
-        </head>
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
-        <SignupForm />
-        <hr/>
-        <LoginForm />
-      </div>
+      <Provider store={store}>
+        <PersistGate loading={<LoadingView />} persistor={persistor}>
+          <NavbarContainer />
+          <Main />
+        </PersistGate>
+      </Provider>
     );
   }
 }
