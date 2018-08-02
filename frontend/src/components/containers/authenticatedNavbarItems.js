@@ -3,7 +3,6 @@ import DropdownLink from '../presentational/dropdownLink';
 import { apiClient } from '../../util/ApiClient';
 import NavDropdownMenu from '../presentational/navDropdownMenu';
 import { signout } from '../../util/Auth';
-import { withRouter } from 'react-router'
 
 class AuthenticatedNavbarItems extends Component {
     constructor(props) {
@@ -19,7 +18,6 @@ class AuthenticatedNavbarItems extends Component {
         apiClient().get("user")
             .then(
                 (response) => {
-                    console.log(response);
                     this.setState({
                         isLoaded: true,
                         username: response.data.username
@@ -45,7 +43,7 @@ class AuthenticatedNavbarItems extends Component {
             return (
                 <React.Fragment>
                     <NavDropdownMenu label={username}>
-                        <DropdownLink label="Sign out" location={this.props.location.pathname} onClick={signout}/>
+                        <DropdownLink to="#" label="Sign out" onClick={signout}/>
                     </NavDropdownMenu>
                 </React.Fragment>
             );
@@ -53,4 +51,4 @@ class AuthenticatedNavbarItems extends Component {
     }
 }
 
-export default withRouter(AuthenticatedNavbarItems);
+export default AuthenticatedNavbarItems;

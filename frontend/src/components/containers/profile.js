@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-import { loggedIn } from '../../util/Auth';
-import SortableLivestreamerList from '../containers/sortableLivestreamerList';
+import SortableLivestreamerList from './sortableLivestreamerList';
 import { apiClient } from '../../util/ApiClient';
 
-class Home extends Component{
+class Profile extends Component{
     constructor(props) {
         super(props);
         this.state = {
@@ -13,10 +12,10 @@ class Home extends Component{
         };
     }
     componentDidMount() {
-        apiClient().get("user")
+        apiClient().get("users?username=" + this.props.match.params.username)
             .then(
                 (response) => {
-                    apiClient().get("users/" + response.data.id + "/livestreams").then(
+                    apiClient().get("users/" + response.data.results[0].id + "/livestreams").then(
                         (response) => {
                             this.setState({
                                 livestreams: response.data.results,
@@ -41,26 +40,16 @@ class Home extends Component{
     }
     render() {
         const { error, isLoaded, livestreams } = this.state;
-        if (loggedIn()) {
-            if (error) {
-                return <div>Error: {error.message}</div>;
-            } else if (!isLoaded) {
-                return <div>Loading...</div>;
-            } else {
-                return (
-                    <SortableLivestreamerList livestreams={livestreams}/>
-                );
-            }
+        if (error) {
+            return <div>Error: {error.message}</div>;
+        } else if (!isLoaded) {
+            return <div>Loading...</div>;
         } else {
             return (
-                <p>About</p>
+                <SortableLivestreamerList livestreams={livestreams}/>
             );
         }
-        
-        
-        
-        
     }
 }
 
-export default Home;
+export default Profile;
